@@ -3,9 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export type Meal = {
   id: string;
-  name: string;
-  time: string;
-  calories: number;
+  name: string | null;
+  eatenAt: Date;
+  foodItems: { calories: number | null }[];
 };
 
 function MealList({ meals }: { meals: Meal[] }) {
@@ -19,17 +19,29 @@ function MealList({ meals }: { meals: Meal[] }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {meals.map((meal) => (
-        <Card key={meal.id}>
-          <CardHeader className="flex-row items-center justify-between">
-            <CardTitle>{meal.name}</CardTitle>
-            <Badge variant="secondary">{meal.time}</Badge>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            {meal.calories} kcal
-          </CardContent>
-        </Card>
-      ))}
+      {meals.map((meal) => {
+        const calories = meal.foodItems.reduce(
+          (total, item) => total + (item.calories ?? 0),
+          0,
+        );
+
+        return (
+          <Card key={meal.id}>
+            <CardHeader className="flex-row items-center justify-between">
+              <CardTitle>{meal.name ?? "Untitled meal"}</CardTitle>
+              <Badge variant="secondary">
+                {meal.eatenAt.toLocaleTimeString(undefined, {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
+              </Badge>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              {calories} kcal
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

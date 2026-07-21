@@ -1,26 +1,24 @@
-"use client";
+import { DatePickerNav } from "@/components/dashboard/date-picker-nav";
+import { MealList } from "@/components/dashboard/meal-list";
+import { getMealsForDate } from "@/data/meals";
 
-import { useState } from "react";
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ date?: string }>;
+}) {
+  const { date: dateParam } = await searchParams;
+  const date = dateParam ? new Date(`${dateParam}T00:00:00`) : new Date();
 
-import { DatePicker } from "@/components/dashboard/date-picker";
-import { MealList, type Meal } from "@/components/dashboard/meal-list";
-
-const mockMeals: Meal[] = [
-  { id: "1", name: "Oatmeal with berries", time: "8:00 AM", calories: 320 },
-  { id: "2", name: "Grilled chicken salad", time: "12:30 PM", calories: 480 },
-  { id: "3", name: "Salmon with rice", time: "7:00 PM", calories: 610 },
-];
-
-export default function DashboardPage() {
-  const [date, setDate] = useState(new Date());
+  const meals = await getMealsForDate(date);
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-6 sm:p-10">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <DatePicker date={date} onSelect={setDate} />
+        <DatePickerNav date={date} />
       </div>
-      <MealList meals={mockMeals} />
+      <MealList meals={meals} />
     </div>
   );
 }
