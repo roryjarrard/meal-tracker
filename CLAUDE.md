@@ -7,6 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Before generating or editing any code, ALWAYS check the `/docs` directory first for a relevant standards file (e.g. `docs/ui.md` for UI code) and follow it exactly.
 - /docs/ui.md
 - /docs/data-fetching.md
+- /docs/data-mutations.md
+- /docs/auth.md
 
 ## Commands
 
