@@ -39,9 +39,12 @@ type NewMealInput = {
 };
 
 async function createMeal(input: NewMealInput) {
-  const [meal] = await db
+  const mealId = crypto.randomUUID();
+
+  const mealInsert = db
     .insert(meals)
     .values({
+      id: mealId,
       userId: input.userId,
       name: input.name,
       eatenAt: input.eatenAt,
@@ -49,20 +52,25 @@ async function createMeal(input: NewMealInput) {
     })
     .returning();
 
-  if (input.foodItems.length > 0) {
-    await db.insert(foodItems).values(
-      input.foodItems.map((item) => ({
-        mealId: meal.id,
-        name: item.name,
-        quantity: item.quantity,
-        servingUnit: item.servingUnit,
-        calories: item.calories,
-        proteinG: item.proteinG,
-        carbsG: item.carbsG,
-        fatG: item.fatG,
-      })),
-    );
+  if (input.foodItems.length === 0) {
+    const [meal] = await mealInsert;
+    return meal;
   }
+
+  const foodItemsInsert = db.insert(foodItems).values(
+    input.foodItems.map((item) => ({
+      mealId,
+      name: item.name,
+      quantity: item.quantity,
+      servingUnit: item.servingUnit,
+      calories: item.calories,
+      proteinG: item.proteinG,
+      carbsG: item.carbsG,
+      fatG: item.fatG,
+    })),
+  );
+
+  const [[meal]] = await db.batch([mealInsert, foodItemsInsert]);
 
   return meal;
 }
