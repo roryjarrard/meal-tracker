@@ -43,6 +43,7 @@ function MealList({ meals }: { meals: Meal[] }) {
                 <Button
                   variant="ghost"
                   size="icon"
+                  nativeButton={false}
                   render={
                     <Link href={`/dashboard/meals/${meal.id}`} aria-label="Edit meal" />
                   }
