@@ -5,6 +5,8 @@ Keep your replies extremely concise and focus on conveying the key information. 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 Before generating or editing any code, ALWAYS check the `/docs` directory first for a relevant standards file (e.g. `docs/ui.md` for UI code) and follow it exactly.
+- /docs/ui.md
+- /docs/data-fetching.md
 
 ## Commands
 
