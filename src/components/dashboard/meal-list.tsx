@@ -1,4 +1,8 @@
+import Link from "next/link";
+import { Pencil } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export type Meal = {
@@ -29,12 +33,23 @@ function MealList({ meals }: { meals: Meal[] }) {
           <Card key={meal.id}>
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>{meal.name ?? "Untitled meal"}</CardTitle>
-              <Badge variant="secondary">
-                {meal.eatenAt.toLocaleTimeString(undefined, {
-                  hour: "numeric",
-                  minute: "2-digit",
-                })}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">
+                  {meal.eatenAt.toLocaleTimeString(undefined, {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  render={
+                    <Link href={`/dashboard/meals/${meal.id}`} aria-label="Edit meal" />
+                  }
+                >
+                  <Pencil />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               {calories} kcal

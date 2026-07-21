@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { createMeal } from "@/data/meals";
+import { createMeal, updateMeal } from "@/data/meals";
 
 const foodItemSchema = z.object({
   name: z.string().min(1),
@@ -36,4 +36,25 @@ async function createMealAction(args: CreateMealArgs) {
   revalidatePath("/dashboard");
 }
 
-export { createMealAction };
+const updateMealSchema = z.object({
+  mealId: z.string().uuid(),
+  name: z.string().min(1),
+  eatenAt: z.date(),
+  notes: z.string().nullable(),
+});
+
+type UpdateMealArgs = z.infer<typeof updateMealSchema>;
+
+async function updateMealAction(args: UpdateMealArgs) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const parsed = updateMealSchema.parse(args);
+
+  await updateMeal({ userId, ...parsed });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/meals/${parsed.mealId}`);
+}
+
+export { createMealAction, updateMealAction };

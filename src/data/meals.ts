@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "@/index";
 import { foodItems, meals } from "@/db/schema";
@@ -20,6 +21,18 @@ async function getMealsForDate(date: Date) {
     with: { foodItems: true },
     orderBy: { eatenAt: "asc" },
   });
+}
+
+async function getMealById(mealId: string) {
+  const { userId } = await auth();
+  if (!userId) return null;
+
+  const meal = await db.query.meals.findFirst({
+    where: { id: { eq: mealId }, userId: { eq: userId } },
+    with: { foodItems: true },
+  });
+
+  return meal ?? null;
 }
 
 type NewMealInput = {
@@ -75,4 +88,29 @@ async function createMeal(input: NewMealInput) {
   return meal;
 }
 
-export { getMealsForDate, createMeal };
+type UpdateMealInput = {
+  userId: string;
+  mealId: string;
+  name: string;
+  eatenAt: Date;
+  notes: string | null;
+};
+
+async function updateMeal(input: UpdateMealInput) {
+  const [meal] = await db
+    .update(meals)
+    .set({
+      name: input.name,
+      eatenAt: input.eatenAt,
+      notes: input.notes,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(eq(meals.id, input.mealId), eq(meals.userId, input.userId)),
+    )
+    .returning();
+
+  return meal;
+}
+
+export { getMealsForDate, getMealById, createMeal, updateMeal };
