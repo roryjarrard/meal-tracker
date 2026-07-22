@@ -1,6 +1,7 @@
 import {ClerkProvider, SignInButton, SignUpButton, Show, UserButton} from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -36,7 +37,11 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ClerkProvider>
-            <header className="flex items-center justify-end gap-4 p-4">
+            <header className="flex items-center justify-between gap-4 p-4">
+              <Link href="/">
+                <h1 className="text-lg font-semibold">Meal Tracker</h1>
+              </Link>
+              <div className="flex items-center gap-4">
               <ThemeToggle />
               <Show when="signed-out">
                 <SignInButton mode="modal">
@@ -49,6 +54,7 @@ export default function RootLayout({
               <Show when="signed-in">
                 <UserButton />
               </Show>
+              </div>
             </header>
             {children}
             <Toaster position="bottom-right" />
